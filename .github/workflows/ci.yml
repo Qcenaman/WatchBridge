@@ -32,12 +32,15 @@ jobs:
           path: WatchBridge-android.apk
 
   watch:
-    # Xcode 15.4 is the newest Xcode that still builds for watchOS 6 (Series 2).
-    runs-on: macos-14
+    # macos-13 is the free Intel runner; macos-14 (arm64) needs a paid plan on this account.
+    runs-on: macos-13
     steps:
       - uses: actions/checkout@v4
-      - name: Select Xcode 15.4
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app
+      - name: Select newest Xcode on the runner
+        run: |
+          ls /Applications | grep -i xcode
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_15*.app | sort -V | tail -1)"
+          xcodebuild -version
       - name: Test shared logic
         working-directory: watch/BridgeCore
         run: swift test
