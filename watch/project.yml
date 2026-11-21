@@ -1,0 +1,76 @@
+name: WatchBridge
+options:
+  bundleIdPrefix: com.qcenaman
+  deploymentTarget:
+    iOS: "13.0"
+    watchOS: "6.0"
+settings:
+  base:
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+packages:
+  BridgeCore:
+    path: BridgeCore
+targets:
+  WatchBridge:
+    type: application
+    platform: iOS
+    sources: [iOS]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.qcenaman.watchbridge
+        TARGETED_DEVICE_FAMILY: "1"
+    info:
+      path: iOS/Info.plist
+      properties:
+        CFBundleDisplayName: WatchBridge
+        UILaunchStoryboardName: ""
+    dependencies:
+      - target: WatchBridgeWatch
+  WatchBridgeWatch:
+    type: application.watchapp2
+    platform: watchOS
+    sources: [WatchApp]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.qcenaman.watchbridge.watchkitapp
+        ARCHS: "armv7k arm64_32"
+    info:
+      path: WatchApp/Info.plist
+      properties:
+        CFBundleDisplayName: WatchBridge
+        WKWatchKitApp: true
+        WKCompanionAppBundleIdentifier: com.qcenaman.watchbridge
+        UIMainStoryboardFile: Interface
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown]
+    dependencies:
+      - target: WatchBridgeWatchExtension
+  WatchBridgeWatchExtension:
+    type: watchkit2-extension
+    platform: watchOS
+    sources:
+      - path: WatchExtension
+        excludes: ["*.entitlements"]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.qcenaman.watchbridge.watchkitapp.watchkitextension
+        CODE_SIGN_ENTITLEMENTS: WatchExtension/WatchExtension.entitlements
+        ARCHS: "armv7k arm64_32"
+    info:
+      path: WatchExtension/Info.plist
+      properties:
+        CFBundleDisplayName: WatchBridge Extension
+        NSExtension:
+          NSExtensionAttributes:
+            WKAppBundleIdentifier: com.qcenaman.watchbridge.watchkitapp
+          NSExtensionPointIdentifier: com.apple.watchkit
+        WKExtensionDelegateClassName: $(PRODUCT_MODULE_NAME).ExtensionDelegate
+        WKBackgroundModes: [workout-processing]
+        NSBluetoothAlwaysUsageDescription: Connects to your Samsung phone to show its notifications.
+        NSBluetoothPeripheralUsageDescription: Connects to your Samsung phone to show its notifications.
+        NSHealthShareUsageDescription: Runs a background session so phone notifications keep arriving with the screen off.
+        NSHealthUpdateUsageDescription: Runs a background session so phone notifications keep arriving with the screen off.
+    dependencies:
+      - package: BridgeCore
+      - sdk: HealthKit.framework

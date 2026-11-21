@@ -1,0 +1,7 @@
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+watch/build/
+watch/WatchBridge.xcodeproj/
+.DS_Store
